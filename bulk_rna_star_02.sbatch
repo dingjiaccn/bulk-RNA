@@ -34,9 +34,9 @@ conditions=(1_hour 1_hour 2_hour 2_hour ctrl ctrl)
 # defining one more variable you would like to regress out
 # the order of ${covar} must match ${samples} order
 # don't define covar if not needed
-#covar=(tech_1 tech_1 tech_1 tech_1 tech_1 tech_1)
+#covar=(tech_1 tech_1 tech_1 tech_2 tech_2 tech_2)
 
-# The output folder needs to be consistent with one used in 01 code
+# The output folder needs to be consistent with one used in array slurm job
 output_dir=/xdisk/darrenc/jiachengd/20250304_hyunjin_lydia_radhika/04_hk_bulk_rna
 
 # =========== part 2 running sum-qc DE-test ===========
@@ -61,7 +61,9 @@ else
   covar_str=${conditions[@]}
 fi
 
+# include covar if defined
 # Rscript ${R_de} --out ${output_dir} --samples ${sample_str} --conditions ${condition_str} --covar ${covar_str}
+# run without covar
 Rscript ${R_de} --out "${output_dir}" --samples "${sample_str}" --conditions "${condition_str}"
 
 
