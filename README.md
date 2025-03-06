@@ -64,7 +64,7 @@ squeue -u $USER
 │	└── combined_counts.txt # Merged gene counts          
 ├──star/
 │	└── <sample>/
-│   	└──  Aligned.sortedByCoord.out.bam # Sorted BAM
+│   		└──  Aligned.sortedByCoord.out.bam # Sorted BAM
 │	   	└── Log.final.out         # STAR logs
 ├──reports/
 │	└── fastqc/           # Quality reports
