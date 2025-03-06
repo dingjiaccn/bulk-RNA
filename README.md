@@ -57,34 +57,36 @@ squeue -u $USER
 
 ```
 ### Output Structure
-
-featureCounts/
-└── <sample> # Gene counts
-└── combined_counts.txt # Merged gene counts          
-star/
-└── <sample>/
-    ├── Aligned.sortedByCoord.out.bam # Sorted BAM
-    └── Log.final.out         # STAR logs
-reports/
-├── fastqc/           # Quality reports
-├── trimmomatic/      # Trimming logs
-└── genebody_coverage/ # Coverage plots
-└── insertion_size/ # Insertion size
-└── reads_distribution/ # Reads distribution on genome
-└── <sample>_read_counts_summary.txt # Read tracking
-DE_results/
-└── heatmap.pdf # Pearson cor heatmap
-└── pca.pdf # PCA plot
-└── de_test_result.csv # edgeR GLM DE test                
-sum_reports/
-└── genebody_coverage_sum.csv # genebody coverage data
-└── genebody_coverage_sum.pdf # genebody coverage plot
-└── insertion_size_sum.csv # insertion size data
-└── insertion_size_sum.pdf # insertion size plot
-└── read_counts_sum.csv # read tracking data
-└── read_counts_sum.pdf # read tracking plot
-└── read_distribution_sum.csv # read distribution data
-└── read_distribution_sum.pdf # read distribution plot
+```bash
+/path/to/project/
+├──featureCounts/
+│	└── <sample> # Gene counts
+│	└── combined_counts.txt # Merged gene counts          
+├──star/
+│	└── <sample>/
+│   	└──  Aligned.sortedByCoord.out.bam # Sorted BAM
+│	   	└── Log.final.out         # STAR logs
+├──reports/
+│	└── fastqc/           # Quality reports
+│	└── trimmomatic/      # Trimming logs
+│	└── genebody_coverage/ # Coverage plots
+│	└── insertion_size/ # Insertion size
+│	└── reads_distribution/ # Reads distribution on genome
+│	└── <sample>_read_counts_summary.txt # Read tracking
+├──DE_results/
+│	└── heatmap.pdf # Pearson cor heatmap
+│	└── pca.pdf # PCA plot
+│	└── de_test_result.csv # edgeR GLM DE test                
+├──sum_reports/
+	└── genebody_coverage_sum.csv # genebody coverage data
+	└── genebody_coverage_sum.pdf # genebody coverage plot
+	└── insertion_size_sum.csv # insertion size data
+	└── insertion_size_sum.pdf # insertion size plot
+	└── read_counts_sum.csv # read tracking data
+	└── read_counts_sum.pdf # read tracking plot
+	└── read_distribution_sum.csv # read distribution data
+	└── read_distribution_sum.pdf # read distribution plot
+```
 
 ## Customization guide
 ### 1. Array Job
