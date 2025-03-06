@@ -22,7 +22,7 @@
 # claiming modules from u of arizona hpc repository
 # install required: sampatools, R, if using locally
 module load samtools/1.19.2
-module load R/4.2.2 # installed requeired: R package edgeR, ggplot2, pheatmap, tidyverse, dplyr, optparse, stringr, ggrepel
+module load R/4.2.2 # install requeired: R packages edgeR, ggplot2, pheatmap, tidyverse, dplyr, optparse, stringr, ggrepel
 
 samples=(1h_1 1h_2 2h_1 2h_2 30m_1 30m_2)
 s_indexes=(S3 S4 S1 S2 S5 S6)
@@ -31,8 +31,8 @@ sample=${samples[$index]}
 s_index=${s_indexes[$index]}
 
 # don't run. test only
-sample=1h_1
-s_index=S3
+# sample=1h_1
+# s_index=S3
 
 # claiming software
 trimmomatic=/home/u15/jiachengd/Trimmomatic-0.36
@@ -45,18 +45,18 @@ java=/home/u15/jiachengd/jdk-21.0.1/bin/java #install required: jdk
 featurecounts=/home/u15/jiachengd/subread-2.0.8-Linux-x86_64/bin/featureCounts # install required: subread
 
 # claiming genome ref
-human_hg38_transcript_bed=/groups/darrenc/references/beds/hg38_Gencode_V28.bed
-mouse_mm10_transcript_bed=./not_available.bed
+human_hg38_transcript_bed=/groups/darrenc/references/beds/hg38_Gencode_V28.bed # bed12 format required for rseqc
+mouse_mm10_transcript_bed=./not_available.bed # need to download GTF from GENCODE and convert to bed12
 
-human_hg38_fa=/groups/darrenc/references/10x/refdata-cellranger-arc-GRCh38-2020-A-2.0.0/fasta/genome.fa # borrow genome ref from 10x
-mouse_mm10_fa=/groups/darrenc/references/10x/refdata-cellranger-arc-mm10-2020-A-2.0.0/fasta/genome.fa # borrow genome ref from 10x
+human_hg38_fa=/groups/darrenc/references/10x/refdata-cellranger-arc-GRCh38-2020-A-2.0.0/fasta/genome.fa # borrow genome fa from 10x, avialable for all group members
+mouse_mm10_fa=/groups/darrenc/references/10x/refdata-cellranger-arc-mm10-2020-A-2.0.0/fasta/genome.fa # borrow genome fa from 10x, avialable for all group members
 
-human_hg38_gtf=/groups/darrenc/Jiacheng/10x_hg38_genes.gtf # borrow genome ref from 10x (36601 features)
+human_hg38_gtf=/groups/darrenc/Jiacheng/10x_hg38_genes.gtf # borrow genome ref from 10x (36601 features), avialable for all group members
 mouse_mm10_gtf=./not_available.gtf
-#human_hg38_gtf=/groups/darrenc/references/gtf/hg38/gencode.v36.annotation.gtf # alternatively, use genecode gtf (59427 features)
+#human_hg38_gtf=/groups/darrenc/references/gtf/hg38/gencode.v36.annotation.gtf # alternatively, use GENCODE gtf (59427 features)
 
-human_hg38_star=/groups/darrenc/references/10x/refdata-cellranger-arc-GRCh38-2020-A-2.0.0/star # borrow genome ref from 10x
-mouse_mm10_star=/groups/darrenc/references/10x/refdata-cellranger-arc-mm10-2020-A-2.0.0/star # borrow genome ref from 10x
+human_hg38_star=/groups/darrenc/references/10x/refdata-cellranger-arc-GRCh38-2020-A-2.0.0/star # borrow star ref from 10x, avialable for all group members
+mouse_mm10_star=/groups/darrenc/references/10x/refdata-cellranger-arc-mm10-2020-A-2.0.0/star # borrow star ref from 10x, avialable for all group members
 
 # claiming fastq input
 fastq_dir=/xdisk/darrenc/jiachengd/20250304_hyunjin_lydia_radhika/02_fastqs/hk_rna
@@ -83,7 +83,7 @@ date
 
 
 # =========== part 2 running trimmomatic fastqc star featurecounts rseqc ===========
-echo 'running trimmomatic read adpator (R1 R2) trimming...'
+echo 'running trimmomatic read adpators (R1 R2) trimming...'
 # choose nextera / trueseq read adptors according to your lib
 # adaptor clip parameter: 2-seed mismatches, 30-palindrome clip threshold, 10-simple clip threshold, 10-minimum adapter length after clipping, true-keep both reads if only one is trimmed
 ${java} -jar ${trimmomatic}/trimmomatic-0.36.jar \
@@ -100,8 +100,8 @@ ${fastqc} \
     -o ${output_dir}/reports/fastqc
 
 echo 'running star mapping...'
-# --outFilterMultimapNmax N max number of multiple alignments allowed for a read: if exceeded, the read is considered unmapped (default:20, set to 1)
-# --quantTranscriptomeBan Singleend prohibits single-end alignment
+# --outFilterMultimapNmax N max number of multiple alignments allowed for a read: if exceeded, the read is considered unmapped (default:20, recommended set to 1)
+# --quantTranscriptomeBan Singleend prohibits single-end alignment do NOT include if running on unpaired sample
 ${star} \
      --runThreadN 10 \
      --genomeDir ${human_hg38_star} \
@@ -116,7 +116,7 @@ ${star} \
 samtools index ${bam}
 
 echo 'running gene-wise quantification...'
-# remove -p --countReadPairs if working with single-end reads
+# remove -p --countReadPairs -B if working with single-end reads
 # adjust -t options are to exon transcript UTR start_codon stop_codon gene
 # adjust -g gene_id if wish to mapped to gene_id
 ${featurecounts} -T 10 -p --countReadPairs -B \
@@ -124,6 +124,7 @@ ${featurecounts} -T 10 -p --countReadPairs -B \
     -o ${output_dir}/featureCounts/${sample} ${bam}
 
 echo 'running genebody coverge...'
+# bed12 (not bed) is a required format
 ${python} ${rseqc_dir}/geneBody_coverage.py \
      --input ${bam} \
      --refgene ${human_hg38_transcript_bed} \
