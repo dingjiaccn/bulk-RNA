@@ -14,7 +14,7 @@ A two-stage SLURM-based pipeline for processing bulk RNA-seq data, including qua
 5. **QC Metrics**:
    - RSeQC (gene body coverage, read distribution)
    - Picard (insert size metrics)
-   - Read tracking through pipeline
+   - Read counts tracking through pipeline
 
 ### Stage 2: Joint Analysis (`bulk_rna_star_02.sbatch`)
 ![Stage 2 Workflow](https://via.placeholder.com/800x400.png?text=Combine+Counts+DE+Analysis)
@@ -22,7 +22,7 @@ A two-stage SLURM-based pipeline for processing bulk RNA-seq data, including qua
 1. **Combine Count Tables**
 2. **Generate joint QC Reports**
 3. **Differential Expression**: edgeR GLM pipeline
-4. **Visualization** (heatmap PCA)
+4. **Visualization** (sample heatmap, PCA)
 
 ## Prerequisites
 
@@ -40,7 +40,7 @@ A two-stage SLURM-based pipeline for processing bulk RNA-seq data, including qua
 - **Reference Files**:
   - hg38 / mm10 STAR index
   - GENCODE annotation (GTF/BED12)
-  - Nextera adapter sequences
+  - Nextera adapter sequences (covered poly-A/poly-T 15bp)
 
 ## Job Execution
 
@@ -69,10 +69,12 @@ squeue -u $USER
 ├──reports/
 │	└── fastqc/           # Quality reports
 │	└── trimmomatic/      # Trimming logs
-│	└── genebody_coverage/ # Coverage plots
-│	└── insertion_size/ # Insertion size
-│	└── reads_distribution/ # Reads distribution on genome
-│	└── <sample>_read_counts_summary.txt # Read tracking
+│	└── dedup/
+│		└── <sample>.dedup.log # individual picard dedup log
+│	└── genebody_coverage/ # individual Coverage plots
+│	└── insertion_size/ # individual Insertion size
+│	└── reads_distribution/ # individual Reads distribution on genome
+│	└── <sample>_read_counts_summary.txt # individual Read counts tracking
 ├──DE_results/
 │	└── heatmap.pdf # Pearson cor heatmap
 │	└── pca.pdf # PCA plot
