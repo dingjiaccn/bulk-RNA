@@ -52,11 +52,10 @@ if (!is.null(opt$covar)) {
 
 output_folder <- opt$out
 
-
-samples=c('1h_1','1h_2','2h_1','2h_2','30m_1','30m_2')
-conditions=c('1_hour', '1_hour', '2_hour', '2_hour', 'ctrl', 'ctrl')
-output_folder <- '/xdisk/darrenc/jiachengd/20250304_hyunjin_lydia_radhika/04_hk_bulk_rna'
-covar <- NULL
+# samples=c('BJ', '50K_1', '50K_2', 'all9')
+# conditions=c('ctrl', 'hspc', 'hspc', 'hspc')
+# output_folder <- '/xdisk/darrenc/jiachengd/20250403_ledford_lab_mouse_lung_10x/03_bulk_rna_anlysis'
+# covar <- NULL
 
 # ==== running edgeR DE test ====
 count_table <- read.table(paste0(output_folder, '/featureCounts/combined_counts.txt'),
@@ -178,7 +177,7 @@ dir.create(paste0(output_folder,'/de_test'))
 write.csv(result_df,
           paste0(output_folder,'/de_test/de_test_result.csv'),
           quote = F,
-          row.names = F)
+          row.names = T)
 
 pdf(paste0(output_folder,'/de_test/cor_heatmap.pdf'),
     width=5, height =5)
