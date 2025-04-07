@@ -19,29 +19,30 @@
 module load R/4.2.2 # installed requeired: R package edgeR, ggplot2, pheatmap, tidyverse, dplyr, optparse, stringr, ggrepel
 
 # claiming R scripts
-R_figure=/xdisk/darrenc/jiachengd/20250304_hyunjin_lydia_radhika/04_hk_bulk_rna/bulk_rna_joint_qc_figure.R
-R_de=/xdisk/darrenc/jiachengd/20250304_hyunjin_lydia_radhika/04_hk_bulk_rna/bulk_rna_de.R
+R_figure=/xdisk/darrenc/jiachengd/20250304_hyunjin_lydia_radhika/01_scripts/bulk_rna/bulk_rna_joint_qc_figure.R
+R_de=/xdisk/darrenc/jiachengd/20250304_hyunjin_lydia_radhika/01_scripts/bulk_rna/bulk_rna_de.R
 
 # claiming samples, treatments, covariants, and output folder
 # The sample names need to be consistent with ones used in 01 code
-samples=(1h_1 1h_2 2h_1 2h_2 30m_1 30m_2)
+samples=(BJ 50K_1 50K_2 all9)
 
 # defining your controls and treatments here (only one control is allowed; multiple conditions are allowed)
 # control group has to have name 'ctrl'
 # the order of ${conditions} must match ${samples} order
-conditions=(1_hour 1_hour 2_hour 2_hour ctrl ctrl)
+conditions=(ctrl ipsc ipsc ipsc)
 
 # defining one more variable you would like to regress out
 # the order of ${covar} must match ${samples} order
 # don't define covar if not needed
-#covar=(tech_1 tech_1 tech_1 tech_2 tech_2 tech_2)
+# covar=(tech_1 tech_1 tech_1 tech_1 tech_1 tech_1)
 
-# The output folder needs to be consistent with one used in array slurm job
-output_dir=/xdisk/darrenc/jiachengd/20250304_hyunjin_lydia_radhika/04_hk_bulk_rna
+# The output folder needs to be consistent with one used in 01 code
+output_dir=/xdisk/darrenc/jiachengd/20250403_ledford_lab_mouse_lung_10x/03_bulk_rna_anlysis
 
 # =========== part 2 running sum-qc DE-test ===========
 echo 'running joint qc figures...'
-sample_str=${samples[@]}
+# sample_str=${samples[@]}
+sample_str=$(IFS=','; echo "${samples[*]}")
 Rscript ${R_figure} --out "$output_dir" --samples "$sample_str"
 
 echo 'combining count tables across samples...'
@@ -53,7 +54,8 @@ $(printf "<(tail -n +3 '${output_dir}/featureCounts/%s' | cut -f7) " "${samples[
 
 
 echo 'running edgeR differential expression test...'
-condition_str=${conditions[@]}
+# condition_str=${conditions[@]}
+condition_str=$(IFS=','; echo "${conditions[*]}")
 # Check if covar is defined
 if [ -z "${covar+x}" ]; then
   covar_str=""  # If covar is not set, leave covar_str empty
@@ -61,9 +63,7 @@ else
   covar_str=${conditions[@]}
 fi
 
-# include covar if defined
 # Rscript ${R_de} --out ${output_dir} --samples ${sample_str} --conditions ${condition_str} --covar ${covar_str}
-# run without covar
 Rscript ${R_de} --out "${output_dir}" --samples "${sample_str}" --conditions "${condition_str}"
 
 
