@@ -39,9 +39,11 @@ option_list <- list(
 opt_parser <- OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
 
-samples <- strsplit(opt$samples, " ")[[1]]
-conditions <- str_split(opt$conditions, ",")[[1]]
-conditions <- as.character(conditions)
+#samples <- strsplit(opt$samples, " ")[[1]]
+#conditions <- str_split(opt$conditions, ",")[[1]]
+samples <- strsplit(opt$samples, ",")[[1]]
+conditions <- strsplit(opt$conditions, ",")[[1]]
+# conditions <- as.character(conditions)
 # Check if covar is provided, otherwise default to NULL
 if (!is.null(opt$covar)) {
   covar <- str_split(opt$covar, ",")[[1]]
@@ -51,6 +53,15 @@ if (!is.null(opt$covar)) {
 }
 
 output_folder <- opt$out
+
+print('testing samples...')
+print(samples)
+print('testing conditions...')
+print(conditions)
+print('output folder...')
+print(output_folder)
+print('including covariate...')
+print(covar)
 
 # samples=c('BJ', '50K_1', '50K_2', 'all9')
 # conditions=c('ctrl', 'hspc', 'hspc', 'hspc')
@@ -168,6 +179,8 @@ for (i in 2:(non_ctrl_condition+1)){
   comparison <- paste0(compared_sample, '_vs_ctrl')
   result <- as.data.frame(topTags(qlf, n=nrow(qlf$table)))
   result$comparison <- comparison
+  result$gene <- rownames(result)
+  rownames(result) <- NULL
   result_list[[i]] <- result
 }
 result_df <- do.call(rbind, result_list)
@@ -177,7 +190,7 @@ dir.create(paste0(output_folder,'/de_test'))
 write.csv(result_df,
           paste0(output_folder,'/de_test/de_test_result.csv'),
           quote = F,
-          row.names = T)
+          row.names = F)
 
 pdf(paste0(output_folder,'/de_test/cor_heatmap.pdf'),
     width=5, height =5)
